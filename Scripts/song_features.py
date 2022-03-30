@@ -27,8 +27,6 @@ class SongFeatures:
         GenreID,Genre,Type
 
 
-
-
 def readGenreClassData(path_to_file):
     '''
     Read genre class data from path_to_file and returns a dict of SongFeatures [from TrackID to SongFeature]
