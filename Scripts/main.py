@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 # Import song feature
 songs_dict = readGenreClassData("Data\GenreClassData_30s.txt")
 
+
 #Extract training and test set
 training_set = TrainingSet(songs_dict)
 test_set = TestSet(songs_dict)
@@ -23,5 +24,4 @@ test_set = TestSet(songs_dict)
 
 nn_5 = KNNClassifier(training_set, ["spectral_rolloff_mean","mfcc_1_mean","spectral_centroid_mean","tempo"], 5, True)
 
-print("Right genre: ", songs_dict[234].Genre, ", Classified genre: ", nn_5.classify_song(songs_dict[234]))
-
+confusion_matrix, confusion_matrix_list = nn_5.evaluate(test_set)

@@ -28,3 +28,19 @@ def readGenreClassData(file_path):
             arr[i] = float(arr[i])
         dict_of_SF[arr[0]] = SongFeatures(arr)
     return dict_of_SF
+
+def genre_string_to_id(genre):
+    '''
+    input: genre in string format
+    output: genre id
+    '''
+    genres = ["pop","metal", "disco", "blues", "reggae", "classical", "rock", "hiphop", "country", "jazz"]
+    return genres.index(genre) + 1
+
+def genre_id_to_string(genre_id):
+    '''
+    input: genre_id
+    output: genre in string format
+    '''
+    genres = ["pop","metal", "disco", "blues", "reggae", "classical", "rock", "hiphop", "country", "jazz"]
+    return genres[genre_id-1]

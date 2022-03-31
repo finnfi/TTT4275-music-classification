@@ -1,5 +1,6 @@
 
 import numpy as np
+from song_features import genre_id_to_string, genre_string_to_id
 
 class KNNClassifier:
     def __init__(self,training_set, features, k, should_normalise):
@@ -13,6 +14,7 @@ class KNNClassifier:
         self.dim = len(features)
         self.features_mean_and_sd = [] # array of tuple (mean, sd)
         self.training_set = training_set
+        self.num_classes = len(training_set.__dict__)
         self.num_points = 0
         for cls in training_set.__dict__.values():
             self.num_points += len(cls)
@@ -46,6 +48,7 @@ class KNNClassifier:
             sd = np.sqrt(var)
             self.points[:,i] = (self.points[:,i]-mean)/sd
             self.features_mean_and_sd.append((mean,sd))
+        
 
     def classify(self, x):
         '''
@@ -67,14 +70,15 @@ class KNNClassifier:
         for i in ind:
             song = self.index_to_song[i]
             genres.append(song.Genre)
-        
+        k_nearest_distances = distances[ind]
         # Return the most common or the closest one if we got 5 different genres
         if len(set(genres)) == len(genres):
-            k_nearest_distances = distances[ind]
             nearest_index = k_nearest_distances.argmin()
             return genres[nearest_index]
         else: 
+            #HAVE TO DO MORE HERE f.ex. when: ['pop','pop','reggea','reggea','jazz']?????
             return max(set(genres), key = genres.count)
+
     
     def classify_song(self, song):
         '''
@@ -86,7 +90,27 @@ class KNNClassifier:
         for feature in self.features:
             x[i] = song.__dict__[feature]
             i += 1
-        return self.classify(x)
+        genre = self.classify(x)
+        return genre
+    
+    def evaluate(self, train_set):
+        '''
+        Returns a confusion matrix
+        
+        input: training_set of type TrainingSet 
+        output confusion_matrix containing list of ids
+        '''
+        confusion_matrix_list = [[[]]*self.num_classes for i in range(self.num_classes)]
+        confusion_matrix = np.zeros([self.num_classes,self.num_classes])
+        for genre, song_list in train_set.__dict__.items():
+            genre_id = genre_string_to_id(genre)
+            for song in song_list:
+                classified_id = genre_string_to_id(self.classify_song(song))
+                confusion_matrix_list[genre_id-1][classified_id-1].append(song.Track_ID)
+                confusion_matrix[genre_id-1,classified_id-1] +=  1
+        print(confusion_matrix)
+        return confusion_matrix, confusion_matrix_list
+        
 
 
 
