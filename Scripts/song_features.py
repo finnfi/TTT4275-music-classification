@@ -12,11 +12,11 @@ class SongFeatures:
         self.GenreID,self.Genre,self.Type = arr
 
 
-def readGenreClassData(path_to_file):
+def readGenreClassData(file_path):
     '''
     Read genre class data from path_to_file and returns a dict of SongFeatures [from TrackID to SongFeature]
     '''
-    with open(path_to_file) as f:
+    with open(file_path) as f:
         f.readline() #Remove description
         lines = f.readlines()
     dict_of_SF = dict()
