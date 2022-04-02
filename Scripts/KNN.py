@@ -63,21 +63,44 @@ class KNNClassifier:
         difference = self.points-x
         distances = np.sum(difference*difference,axis=1)
         # k smallest distances: 
-        ind = np.argpartition(distances, self.k)[:self.k] #function gives array of indexes
+        index_k_nearest_points = np.argpartition(distances, self.k)[:self.k] #function gives array of indexes
+        distance_k_nearest_points = distances[index_k_nearest_points]
 
         # Find genres 
-        genres = []
-        for i in ind:
+        genres_k_nearest_points = []
+        for i in index_k_nearest_points:
             song = self.index_to_song[i]
-            genres.append(song.Genre)
-        k_nearest_distances = distances[ind]
-        # Return the most common or the closest one if we got 5 different genres
-        if len(set(genres)) == len(genres):
-            nearest_index = k_nearest_distances.argmin()
-            return genres[nearest_index]
-        else: 
-            #HAVE TO DO MORE HERE f.ex. when: ['pop','pop','reggea','reggea','jazz']?????
-            return max(set(genres), key = genres.count)
+            genres_k_nearest_points.append(song.Genre)
+        
+        # Combine data [[index, distance,genre], [index,distance,genre], ...]
+        k_nearest_points = [[index_k_nearest_points[i],distance_k_nearest_points[i],genres_k_nearest_points[i]] for i in range(self.k)]
+        
+        #Count genres
+        genres_count = dict()
+        for point in k_nearest_points:
+            genres_count[point[2]] = genres_count.get(point[2],0) + 1
+        genres_count = list(genres_count.items())
+        genres_count = sorted(genres_count, key=lambda tup: tup[1], reverse=True)
+
+        #Find genre(s) with most entries, delete the others
+        for i in range(1,len(genres_count)):
+            if genres_count[i][1] < genres_count[i-1][1]:
+                genres_count = genres_count[:i]
+                break
+        
+        genres = [genre[0] for genre in genres_count]
+
+        #Find all points belonging to these genres
+        points_to_consider = []
+        for point in k_nearest_points:
+            if point[2] in genres:
+                points_to_consider.append(point)
+
+        #Sort points to consider
+        points_to_consider = sorted(points_to_consider, key=lambda x:x[1])
+
+        #Return genre with smallest distance
+        return points_to_consider[0][2]
 
     
     def classify_song(self, song):
