@@ -2,6 +2,7 @@ from data_extraction import TrainingSet, TestSet
 from plot_histogram import plot_histogram
 from song_features import readGenreClassData
 from KNN import KNNClassifier
+from KNN_scikit import KNNSciKitClassifier
 
 import matplotlib.pyplot as plt
 
@@ -22,6 +23,8 @@ plt.show()
 
 #Create KNN object
 
-nn_5 = KNNClassifier(training_set, ["spectral_rolloff_mean","mfcc_1_mean","spectral_centroid_mean","tempo"], 5, "min_max")
+knn = KNNClassifier(training_set, ["spectral_rolloff_mean","mfcc_1_mean","spectral_centroid_mean","tempo"], 5, "z_score")
+knn_scikit = KNNSciKitClassifier(training_set, ["spectral_rolloff_mean","mfcc_1_mean","spectral_centroid_mean","tempo"], 5, "z_score")
 
-confusion_matrix, confusion_matrix_list = nn_5.evaluate(test_set)
+confusion_matrix, confusion_matrix_list = knn.evaluate(test_set)
+confusion_matrix, confusion_matrix_list = knn_scikit.evaluate(test_set)

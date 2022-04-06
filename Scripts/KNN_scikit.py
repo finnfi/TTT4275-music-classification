@@ -1,10 +1,13 @@
-
-from re import M
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
+from sklearn import neighbors, datasets
+from re import M
 from collections import Counter
 from song_features import genre_id_to_string, genre_string_to_id
 
-class KNNClassifier:
+
+class KNNSciKitClassifier:
     def __init__(self,training_set, features, k, input_normalisation_type = ""):
         '''
         training_set: variable of TrainingSet
@@ -38,7 +41,14 @@ class KNNClassifier:
                     self.points[i,j] = song.__dict__[feature]
                     j += 1
                 i += 1
-        
+
+        # Generate target list (actual classes) for training set
+
+        self.target_classes = [None]*self.num_points
+        for i in range(self.num_points):
+            song = self.index_to_song[i]
+            self.target_classes[i]= song.Genre
+
         #Normalisation
         # Keep track of mean, sd, min and max for each feature to normalise
         self.features_mean_sd = [] # array of tuple (mean, sd)
@@ -49,7 +59,11 @@ class KNNClassifier:
             self.z_score_normalise()
         elif input_normalisation_type == "min_max":
             self.min_max_normalise()
-            
+        
+        #Scikit classifier
+        self.scikit_clf = neighbors.KNeighborsClassifier(self.k, weights="uniform")
+        self.scikit_clf.fit(self.points, self.target_classes)
+
     def z_score_normalise(self):
         '''
         Normalises features using z-score normalisation
@@ -89,49 +103,8 @@ class KNNClassifier:
                 max = self.features_min_max[i][1]
                 diff = max-min
                 x[i] = (x[i]-min)/diff
-
-        # Calculate distances
-        difference = self.points-x
-        distances = np.sum(difference*difference,axis=1)
-        # k smallest distances: 
-        index_k_nearest_points = np.argpartition(distances, self.k)[:self.k] #function gives array of indexes
-        distance_k_nearest_points = distances[index_k_nearest_points]
-
-        # Find genres 
-        genres_k_nearest_points = []
-        for i in index_k_nearest_points:
-            song = self.index_to_song[i]
-            genres_k_nearest_points.append(song.Genre)
         
-        # Combine data [[index, distance,genre], [index,distance,genre], ...]
-        k_nearest_points = [[index_k_nearest_points[i],distance_k_nearest_points[i],genres_k_nearest_points[i]] for i in range(self.k)]
-        
-        #Count genres
-        genres_count = dict()
-        for point in k_nearest_points:
-            genres_count[point[2]] = genres_count.get(point[2],0) + 1
-        genres_count = list(genres_count.items())
-        genres_count = sorted(genres_count, key=lambda tup: tup[1], reverse=True)
-
-        #Find genre(s) with most entries, delete the others
-        for i in range(1,len(genres_count)):
-            if genres_count[i][1] < genres_count[i-1][1]:
-                genres_count = genres_count[:i]
-                break
-        
-        genres = [genre[0] for genre in genres_count]
-
-        #Find all points belonging to these genres
-        points_to_consider = []
-        for point in k_nearest_points:
-            if point[2] in genres:
-                points_to_consider.append(point)
-
-        #Sort points to consider
-        points_to_consider = sorted(points_to_consider, key=lambda x:x[1])
-
-        #Return genre with smallest distance
-        return points_to_consider[0][2]
+        return self.scikit_clf.predict(x.reshape(1,-1))
         
     
     def classify_song(self, song):
@@ -176,7 +149,3 @@ def error_rate(confusion_matrix):
     error_rate = (total-correct)/total
 
     return error_rate
-    
-    
-
-        
