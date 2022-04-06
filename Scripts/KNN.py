@@ -161,9 +161,10 @@ class KNNClassifier:
                 classified_id = self.classes.index(self.classify_song(song))
                 confusion_matrix_list[genre_id-1][classified_id-1].append(song.Track_ID)
                 confusion_matrix[genre_id-1,classified_id-1] +=  1
+        er = error_rate(confusion_matrix)
         print("Confusion matrix: \n", confusion_matrix)
-        print("Error rate: ", error_rate(confusion_matrix))
-        return confusion_matrix, confusion_matrix_list
+        print("Error rate: ", er)
+        return confusion_matrix, confusion_matrix_list, er
         
 
 def error_rate(confusion_matrix):
