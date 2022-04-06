@@ -22,6 +22,6 @@ plt.show()
 
 #Create KNN object
 
-nn_5 = KNNClassifier(training_set, ["spectral_rolloff_mean","mfcc_1_mean","spectral_centroid_mean","tempo"], 5, "z_score")
+nn_5 = KNNClassifier(training_set, ["spectral_rolloff_mean","mfcc_1_mean","spectral_centroid_mean","tempo"], 5, "min_max")
 
 confusion_matrix, confusion_matrix_list = nn_5.evaluate(test_set)

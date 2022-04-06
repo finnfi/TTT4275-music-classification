@@ -162,12 +162,23 @@ class KNNClassifier:
                 classified_id = genre_string_to_id(self.classify_song(song))
                 confusion_matrix_list[genre_id-1][classified_id-1].append(song.Track_ID)
                 confusion_matrix[genre_id-1,classified_id-1] +=  1
-        print(confusion_matrix)
+        print("Confusion matrix: \n", confusion_matrix)
+        print("Error rate: ", error_rate(confusion_matrix))
         return confusion_matrix, confusion_matrix_list
         
 
+def error_rate(confusion_matrix):
+    '''
+    input: confusion matrix as a 2-D np array
+    output: error rate (# of false classified points)/(total points)
+    '''
+    total = np.sum(confusion_matrix)
+    correct = np.sum(np.diagonal(confusion_matrix))
+    
+    error_rate = (total-correct)/total
 
-
-
+    return error_rate
+    
+    
 
         
