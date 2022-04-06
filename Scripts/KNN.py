@@ -1,4 +1,5 @@
 
+from re import M
 import numpy as np
 from collections import Counter
 from song_features import genre_id_to_string, genre_string_to_id
@@ -65,8 +66,8 @@ class KNNClassifier:
         Normalises features using min-max normalisation
         '''
         for i in range(self.dim):
-            min = np.minimum(self.points[:,i])
-            max = np.maximum(self.points[:,i])
+            min = np.min(self.points[:,i])
+            max = np.max(self.points[:,i])
             diff = max - min
 
             self.points[:,i] = (self.points[:,i]-min)/diff
@@ -84,7 +85,10 @@ class KNNClassifier:
                 x[i] = (x[i]-self.features_mean_sd[i][0])/self.features_mean_sd[i][1]
         elif self.input_normalisation_type == "min_max":
             for i in range(self.dim):
-                x[i] = (x[i]-self.features_min_max[i][0])/self.features_min_max[i][1]
+                min = (self.features_min_max[i][0])
+                max = self.features_min_max[i][1]
+                diff = max-min
+                x[i] = (x[i]-min)/diff
 
         # Calculate distances
         difference = self.points-x
