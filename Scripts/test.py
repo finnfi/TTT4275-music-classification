@@ -1,2 +1,4 @@
-genres = ["en", "to", "to"]
-print(len(set(genres)) == len(genres))
+from collections import Counter
+genres = ["en", "to", "to","en"]
+c = Counter(genres)
+print(c.most_common())
