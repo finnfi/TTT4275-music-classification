@@ -17,6 +17,12 @@ class TrainingSet:
             if song.Type == "Train":
                 self.__dict__[song.Genre].append(song)
 
+class ReducedSet:
+    def __init__(self, pop,metal,disco, classical):
+        self.pop = pop
+        self.metal =  metal
+        self.disco =  disco
+        self.classical = classical
 
 
 class TestSet:

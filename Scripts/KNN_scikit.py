@@ -16,8 +16,9 @@ class KNNSciKitClassifier:
         should_normalise: "" -> no normalisation, "z_score", "min_max"
         '''
         self.training_set = training_set
-
-        self.num_classes = len(training_set.__dict__)
+        
+        self.classes = list(training_set.__dict__)
+        self.num_classes = len(self.classes)
         self.k = k
         self.features = features
         self.dim = len(features)
@@ -43,7 +44,6 @@ class KNNSciKitClassifier:
                 i += 1
 
         # Generate target list (actual classes) for training set
-
         self.target_classes = [None]*self.num_points
         for i in range(self.num_points):
             song = self.index_to_song[i]
@@ -128,9 +128,9 @@ class KNNSciKitClassifier:
         confusion_matrix_list = [[[]]*self.num_classes for i in range(self.num_classes)]
         confusion_matrix = np.zeros([self.num_classes,self.num_classes])
         for genre, song_list in train_set.__dict__.items():
-            genre_id = genre_string_to_id(genre)
+            genre_id = self.classes.index(genre)
             for song in song_list:
-                classified_id = genre_string_to_id(self.classify_song(song))
+                classified_id  = self.classes.index(self.classify_song(song))
                 confusion_matrix_list[genre_id-1][classified_id-1].append(song.Track_ID)
                 confusion_matrix[genre_id-1,classified_id-1] +=  1
         print("Confusion matrix: \n", confusion_matrix)
