@@ -6,7 +6,7 @@ from KNN import KNNClassifier
 import matplotlib.pyplot as plt
 
 # Import song feature
-songs_dict = readGenreClassData("Data\GenreClassData_30s.txt")
+songs_dict = readGenreClassData("Data/GenreClassData_30s.txt")
 
 
 #Extract training and test set
@@ -14,11 +14,11 @@ training_set = TrainingSet(songs_dict)
 test_set = TestSet(songs_dict)
 
 #Plotting of features
-# axs1 = plot_histogram(training_set,"spectral_rolloff_mean")
-# axs2 =plot_histogram(training_set,"mfcc_1_mean")
-# axs3 =plot_histogram(training_set,"spectral_centroid_mean")
-# axs4 =plot_histogram(training_set,"tempo")
-# plt.show()
+axs1 = plot_histogram(training_set,"spectral_rolloff_mean")
+axs2 = plot_histogram(training_set,"mfcc_1_mean")
+axs3 = plot_histogram(training_set,"spectral_centroid_mean")
+axs4 = plot_histogram(training_set,"tempo")
+plt.show()
 
 #Create KNN object
 
