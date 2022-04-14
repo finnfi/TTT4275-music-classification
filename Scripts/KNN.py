@@ -1,8 +1,7 @@
 
-from re import M
 import numpy as np
-from collections import Counter
-from song_features import genre_id_to_string, genre_string_to_id
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 
 class KNNClassifier:
     def __init__(self,training_set, features, k, input_normalisation_type = ""):
@@ -39,6 +38,10 @@ class KNNClassifier:
                     self.points[i,j] = song.__dict__[feature]
                     j += 1
                 i += 1
+        
+        #PCA variables:
+        self.isPCAused = False
+        self.pca_n_components = 0
         
         #Normalisation
         # Keep track of mean, sd, min and max for each feature to normalise
@@ -90,6 +93,10 @@ class KNNClassifier:
                 max = self.features_min_max[i][1]
                 diff = max-min
                 x[i] = (x[i]-min)/diff
+        
+        #Do PCA transform if PCA is anabled
+        if self.isPCAused:
+            x = self.pca.transform(x.reshape(1, -1))
 
         # Calculate distances
         difference = self.points-x
@@ -159,12 +166,72 @@ class KNNClassifier:
             genre_id = self.classes.index(genre)
             for song in song_list:
                 classified_id = self.classes.index(self.classify_song(song))
-                confusion_matrix_list[genre_id-1][classified_id-1].append(song.Track_ID)
-                confusion_matrix[genre_id-1,classified_id-1] +=  1
+                confusion_matrix_list[genre_id][classified_id].append(song.Track_ID)
+                confusion_matrix[genre_id,classified_id] +=  1
         er = error_rate(confusion_matrix)
-        # print("Confusion matrix: \n", confusion_matrix)
-        # print("Error rate: ", er)
+        print("Confusion matrix: \n", confusion_matrix)
+        print("Error rate: ", er)
         return confusion_matrix, confusion_matrix_list, er
+    
+    def plot_3D_feature_space(self):
+        '''
+        input
+        training_set: a GenreSet
+        genres: list of genres to plot
+        features: a list of size 3 with features to use
+
+        output
+        returns an ac object if dim==3, else nothing
+        '''
+        if (self.isPCAused and self.pca_n_components != 3) or (not self.isPCAused and self.dim != 3):
+            return
+        #Init figure
+        fig = plt.figure()
+        ax = fig.add_subplot(projection='3d')
+
+        xs = []
+        ys = []
+        zs = []
+
+        for i in range(self.num_points):
+            #Add point to figure 
+            xs.append(self.points[i][0])
+            ys.append(self.points[i][1])
+            zs.append(self.points[i][2])
+
+            if i+1 >= self.num_points or self.index_to_song[i].Genre != self.index_to_song[i+1].Genre:
+                ax.scatter(xs,ys,zs,label=self.index_to_song[i].Genre)
+                xs = []
+                ys = []
+                zs = []
+
+        #Set labels
+        if not self.isPCAused:
+            ax.set_xlabel(self.features[0])
+            ax.set_ylabel(self.features[1])
+            ax.set_zlabel(self.features[2])
+        elif self.isPCAused:
+            ax.set_xlabel("pca1")
+            ax.set_ylabel("pca2")
+            ax.set_zlabel("pca3")
+
+        #Add legends
+        ax.legend(loc='best', frameon=False)
+
+        return ax
+    
+    def doPCA(self, n_components):
+        '''
+        Transform points using PCA analysis
+        Changes self.points
+        '''
+        self.isPCAused = True
+        self.pca_n_components = n_components
+
+        self.pca = PCA(n_components=n_components)
+        self.points = self.pca.fit_transform(self.points)
+
+
         
 
 def error_rate(confusion_matrix):

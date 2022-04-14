@@ -131,8 +131,8 @@ class KNNSciKitClassifier:
             genre_id = self.classes.index(genre)
             for song in song_list:
                 classified_id  = self.classes.index(self.classify_song(song))
-                confusion_matrix_list[genre_id-1][classified_id-1].append(song.Track_ID)
-                confusion_matrix[genre_id-1,classified_id-1] +=  1
+                confusion_matrix_list[genre_id][classified_id].append(song.Track_ID)
+                confusion_matrix[genre_id,classified_id] +=  1
         print("Confusion matrix: \n", confusion_matrix)
         print("Error rate: ", error_rate(confusion_matrix))
         return confusion_matrix, confusion_matrix_list
