@@ -35,7 +35,7 @@ X_test, y_test, ids_test  = getPointsAndClasses(songs_dict,features, genres, "Te
 
 # Create KNN object
 knn = KNNClassifier(X_train, y_train, ids_train, features, 5 ,"min_max")
-knn_scikit = KNNSciKitClassifier(X_train, y_train, ids_train, features, 5,"Min_max")
+knn_scikit = KNNSciKitClassifier(X_train, y_train, ids_train, features, 5,"min_max")
 
 # Do PCA on knn
 # knn.doPCA(3)
