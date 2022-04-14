@@ -21,6 +21,7 @@ songs_dict = readGenreClassData("Data/GenreClassData_30s.txt")
 #                 "chroma_stft_10_std","chroma_stft_11_std","chroma_stft_12_std","tempo","mfcc_1_mean","mfcc_2_mean","mfcc_3_mean","mfcc_4_mean","mfcc_5_mean","mfcc_6_mean",
 #                 "mfcc_7_mean","mfcc_8_mean","mfcc_9_mean","mfcc_10_mean","mfcc_11_mean","mfcc_12_mean","mfcc_1_std","mfcc_2_std","mfcc_3_std","mfcc_4_std","mfcc_5_std",
 #                 "mfcc_6_std","mfcc_7_std","mfcc_8_std","mfcc_9_std","mfcc_10_std","mfcc_11_std","mfcc_12_std"]
+# features    = ["spectral_rolloff_mean","spectral_centroid_mean","mfcc_1_mean","tempo"]
 features    = ["spectral_rolloff_mean","spectral_centroid_mean","mfcc_1_mean","tempo"]
 genres      = ["pop","metal", "disco", "blues", "reggae", "classical", "rock", "hiphop", "country", "jazz"]
 # genres      = ["pop", "disco", "metal", "classical"] # Genres to plot in excercise 2
@@ -35,7 +36,8 @@ X_test, y_test, ids_test  = getPointsAndClasses(songs_dict,features, genres, "Te
 
 # Create KNN object
 knn = KNNClassifier(X_train, y_train, ids_train, features, 5 ,"min_max")
-knn_scikit = KNNSciKitClassifier(X_train, y_train, ids_train, features, 5,"min_max")
+# knn_scikit = KNNSciKitClassifier(X_train, y_train, ids_train, features, 5,"min_max")
+
 
 # Do PCA on knn
 # knn.doPCA(3)
@@ -52,7 +54,7 @@ confusion_matrix_our, confusion_matrix_list_our, error_rate = knn.evaluate(X_tes
 # confusion_matrix_scikit, confusion_matrix_list_scikit, error_rate = knn_scikit.evaluate(X_test.copy(),y_test.copy(),ids_test.copy())
 
 # Plot confusion matrices
-disp = ConfusionMatrixDisplay(confusion_matrix=confusion_matrix_our, display_labels=genres)
+disp = ConfusionMatrixDisplay(confusion_matrix=confusion_matrix_our, display_labels=knn.classes)
 disp.plot(cmap=plt.cm.Blues,xticks_rotation=45)
 plt.show()
 

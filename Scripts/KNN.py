@@ -129,7 +129,7 @@ class KNNClassifier:
     def classify_song(self, song):
         '''
         input: song of type SongFeatures
-        output: genre string
+        output: genreID
         '''
         x = np.zeros(self.dim)
         i = 0
