@@ -1,32 +1,42 @@
 
 import numpy as np
+import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
-from song_features import genre_id_to_string
 
-class KNNClassifier:
-    def __init__(self, X, y, ids_list, features, k, input_normalisation_type = ""):
+class LinearClassifier:
+    def __init__(self,training_set, features, k, input_normalisation_type = ""):
         '''
-        X               : point nd.array of dimension (N_POINTS, N_FEATURES)
-        y               : nd.array of class labels
-        ids_list        : array of correspongin track ids 
-        features        : array of feature strings
-        k               : int 
+        training_set: variable of TrainingSet
+        features: array of feature strings
         should_normalise: "" -> no normalisation, "z_score", "min_max"
         '''
-        self.X = X.copy()
-        self.y = y.copy()
-        self.ids_list = ids_list.copy()
-        self.classes_id = list(np.unique(y))
-        self.classes = [genre_id_to_string(i) for i in self.classes_id]
+        self.training_set = training_set
+
+        self.classes = list(training_set.__dict__)
         self.num_classes = len(self.classes)
-        self.k = k
         self.features = features
         self.dim = len(features)
-        self.num_points = np.size(X,0)
+
+        # Calculate number of points in traning set data
+        self.num_points = 0
+        for cls in training_set.__dict__.values():
+            self.num_points += len(cls)
+
+        # Initialise matrix of point and index-to-song array
+        self.points = np.zeros([self.num_points,self.dim])
+        self.index_to_song = [None]*self.num_points
         
-        #PCA variables:
-        self.isPCAused = False
-        self.pca_n_components = 0
+        #Extract feature values
+        i = 0
+        for cls in training_set.__dict__.values():
+            for song in cls:
+                self.index_to_song[i] = song
+                j = 0
+                for feature in features:
+                    self.points[i,j] = song.__dict__[feature]
+                    j += 1
+                i += 1
+    
         
         #Normalisation
         # Keep track of mean, sd, min and max for each feature to normalise
@@ -38,16 +48,21 @@ class KNNClassifier:
             self.z_score_normalise()
         elif input_normalisation_type == "min_max":
             self.min_max_normalise()
+
+        #Calculate weights:
+        self.weights = np.random.rand(self.num_classes, self.dim)
+
+        
             
     def z_score_normalise(self):
         '''
         Normalises features using z-score normalisation
         '''
         for i in range(self.dim):
-            mean = np.mean(self.X[:,i])
-            var = np.var(self.X[:,i])
+            mean = np.mean(self.points[:,i])
+            var = np.var(self.points[:,i])
             sd = np.sqrt(var)
-            self.X[:,i] = (self.X[:,i]-mean)/sd
+            self.points[:,i] = (self.points[:,i]-mean)/sd
             self.features_mean_sd.append((mean,sd))
 
     def min_max_normalise(self):
@@ -55,11 +70,11 @@ class KNNClassifier:
         Normalises features using min-max normalisation
         '''
         for i in range(self.dim):
-            min = np.min(self.X[:,i])
-            max = np.max(self.X[:,i])
+            min = np.min(self.points[:,i])
+            max = np.max(self.points[:,i])
             diff = max - min
 
-            self.X[:,i] = (self.X[:,i]-min)/diff
+            self.points[:,i] = (self.points[:,i]-min)/diff
             self.features_min_max.append((min,max))
         
 
@@ -84,7 +99,7 @@ class KNNClassifier:
             x = self.pca.transform(x.reshape(1, -1))
 
         # Calculate distances
-        difference = self.X-x
+        difference = self.points-x
         distances = np.sum(difference*difference,axis=1)
         # k smallest distances: 
         index_k_nearest_points = np.argpartition(distances, self.k)[:self.k] #function gives array of indexes
@@ -93,7 +108,8 @@ class KNNClassifier:
         # Find genres 
         genres_k_nearest_points = []
         for i in index_k_nearest_points:
-            genres_k_nearest_points.append(self.y[i])
+            song = self.index_to_song[i]
+            genres_k_nearest_points.append(song.Genre)
         
         # Combine data [[index, distance,genre], [index,distance,genre], ...]
         k_nearest_points = [[index_k_nearest_points[i],distance_k_nearest_points[i],genres_k_nearest_points[i]] for i in range(self.k)]
@@ -122,7 +138,7 @@ class KNNClassifier:
         #Sort points to consider
         points_to_consider = sorted(points_to_consider, key=lambda x:x[1])
 
-        #Return genre ID with smallest distance
+        #Return genre with smallest distance
         return points_to_consider[0][2]
         
     
@@ -139,34 +155,23 @@ class KNNClassifier:
         genre = self.classify(x)
         return genre
     
-    def evaluate(self, X_test, y_test, ids_list_test):
+    def evaluate(self, train_set):
         '''
         input: training_set of type TrainingSet 
         output: confusion_matrices (one with numbers, one with lists of ids)
         '''
         confusion_matrix_list = [[[]]*self.num_classes for i in range(self.num_classes)]
         confusion_matrix = np.zeros([self.num_classes,self.num_classes])
-
-        for i in range(len(y_test)):
-            genre_id = y_test[i]
-            classified_id = self.classify(X_test[i,:])
-            confusion_matrix_list[self.classes_id.index(genre_id)][self.classes_id.index(classified_id)].append(ids_list_test[i])
-            confusion_matrix[self.classes_id.index(genre_id)][self.classes_id.index(classified_id)] +=  1
+        for genre, song_list in train_set.__dict__.items():
+            genre_id = self.classes.index(genre)
+            for song in song_list:
+                classified_id = self.classes.index(self.classify_song(song))
+                confusion_matrix_list[genre_id][classified_id].append(song.Track_ID)
+                confusion_matrix[genre_id,classified_id] +=  1
         er = error_rate(confusion_matrix)
         print("Confusion matrix: \n", confusion_matrix)
         print("Error rate: ", er)
         return confusion_matrix, confusion_matrix_list, er
-    
-    def doPCA(self, n_components):
-        '''
-        Transform points using PCA analysis
-        Changes self.points
-        '''
-        self.isPCAused = True
-        self.pca_n_components = n_components
-
-        self.pca = PCA(n_components=n_components)
-        self.X = self.pca.fit_transform(self.X)
 
 
         
@@ -178,8 +183,6 @@ def error_rate(confusion_matrix):
     '''
     total = np.sum(confusion_matrix)
     correct = np.sum(np.diagonal(confusion_matrix))
-    
     error_rate = (total-correct)/total
-
     return error_rate
     

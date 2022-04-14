@@ -35,7 +35,7 @@ def genre_string_to_id(genre):
     output: genre id
     '''
     genres = ["pop","metal", "disco", "blues", "reggae", "classical", "rock", "hiphop", "country", "jazz"]
-    return genres.index(genre) + 1
+    return genres.index(genre)
 
 def genre_id_to_string(genre_id):
     '''
@@ -43,4 +43,4 @@ def genre_id_to_string(genre_id):
     output: genre in string format
     '''
     genres = ["pop","metal", "disco", "blues", "reggae", "classical", "rock", "hiphop", "country", "jazz"]
-    return genres[genre_id-1]
+    return genres[genre_id]
