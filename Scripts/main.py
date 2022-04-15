@@ -47,16 +47,16 @@ knn_scikit = KNNSciKitClassifier(X_train, y_train, ids_train, features, 5,"min_m
 
 
 # Get confusion matrices
-# print("Our KNN implementation:")
-# confusion_matrix_our, confusion_matrix_list_our, error_rate = knn.evaluate(X_train.copy(),y_train.copy(),ids_train.copy())   
-# print("\n Sci-kit KNN implementation:")
-# confusion_matrix_scikit, confusion_matrix_list_scikit, error_rate = knn_scikit.evaluate(X_train.copy(),y_train.copy(),ids_train.copy())
+print("Our KNN implementation:")
+confusion_matrix_our, confusion_matrix_list_our, error_rate = knn.evaluate(X_test.copy(),y_test.copy(),ids_test.copy())   
+print("\n Sci-kit KNN implementation:")
+confusion_matrix_scikit, confusion_matrix_list_scikit, error_rate = knn_scikit.evaluate(X_test.copy(),y_test.copy(),ids_test.copy())
 
 # Plot confusion matrices
-# disp = ConfusionMatrixDisplay(confusion_matrix=confusion_matrix_our, display_labels=knn.classes)
-# disp.plot(cmap=plt.cm.Blues,xticks_rotation=45)
-# plt.show()
+disp = ConfusionMatrixDisplay(confusion_matrix=confusion_matrix_our, display_labels=knn.classes)
+disp.plot(cmap=plt.cm.Blues,xticks_rotation=45)
+plt.show()
 
-# disp = ConfusionMatrixDisplay(confusion_matrix=confusion_matrix_scikit, display_labels=genres)
-# disp.plot(cmap=plt.cm.Blues,xticks_rotation=45)
-# plt.show()
+disp = ConfusionMatrixDisplay(confusion_matrix=confusion_matrix_scikit, display_labels=genres)
+disp.plot(cmap=plt.cm.Blues,xticks_rotation=45)
+plt.show()
