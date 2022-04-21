@@ -1,4 +1,4 @@
-from data_extraction import getPointsAndClasses
+from song_features import getPointsAndClasses
 from song_features import readGenreClassData
 from KNN import KNNClassifier
 from itertools import combinations

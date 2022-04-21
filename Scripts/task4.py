@@ -1,3 +1,4 @@
+from soupsieve import select
 from song_features import genre_id_to_string, genre_string_to_id
 from song_features import readGenreClassData, getPointsAndClasses
 from KNN import error_rate
@@ -5,6 +6,7 @@ from itertools import cycle
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 from sklearn.mixture import GaussianMixture
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.feature_selection import SelectKBest
 import numpy as np
 import copy
 
@@ -31,11 +33,15 @@ best_gmms = dict() # Dict from genre to best gmm for that genre
 
 X_train, y_train, ids_train  = getPointsAndClasses(songs_dict,features, genres, "Train")
 scaler = MinMaxScaler()
-scaler.fit(X_train)
+X_train = scaler.fit_transform(X_train)
+
+k_best= SelectKBest(k=4)
+k_best.fit(X_train, y_train)
 
 for genre in genres: 
     X_train, y_train, ids_train  = getPointsAndClasses(songs_dict,features, [genre], "Train")
     X_train = scaler.transform(X_train)
+    X_train = k_best.transform(X_train)
     n_samples = len(ids_train)
     lowest_bic = np.infty
     bic = [] # ddescription: https://onlinelibrary.wiley.com/doi/pdf/10.1002/9781118856406.app5
@@ -86,6 +92,7 @@ for genre in genres:
 # Test data:
 X_test, y_test, ids_test  = getPointsAndClasses(songs_dict,features, genres, "Test")
 X_test = scaler.transform(X_test)
+X_test = k_best.transform(X_test)
 # Compute log likelihood for every function
 log_likelihood = np.zeros((len(y_test),len(genres)))
 i = 0
