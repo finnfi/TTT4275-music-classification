@@ -5,7 +5,6 @@ from KNN import KNNClassifier
 from KNN_scikit import KNNSciKitClassifier
 from itertools import combinations
 from sklearn.metrics import ConfusionMatrixDisplay
-
 import matplotlib.pyplot as plt
 
 # Import song feature

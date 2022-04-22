@@ -37,7 +37,7 @@ def getPointsAndClasses(songs_dict, features, classes, type):
             features    - array of features to be used
             classes     - array of classes to be used
             type        - "Train" or "Test"
-    output: X, y, id_list - X is a np.array of sice (N_POINTS, N_FEATURES), 
+    output: X, y, id_list - X is a np.array of size (N_POINTS, N_FEATURES), 
                             y is a np.array of class ids with size N_POINTS, 
                             id_list is id to corresponding song
     '''
