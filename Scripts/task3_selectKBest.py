@@ -1,9 +1,10 @@
-from song_features import getPointsAndClasses
-from song_features import readGenreClassData
-from sklearn.feature_selection import SelectKBest
-import numpy as np
+from song_features import readGenreClassData, getPointsAndClasses
 from KNN import KNNClassifier
+
+from sklearn.feature_selection import SelectKBest
 from sklearn.metrics import ConfusionMatrixDisplay
+
+import numpy as np
 import matplotlib.pyplot as plt
 
 # Import song feature
