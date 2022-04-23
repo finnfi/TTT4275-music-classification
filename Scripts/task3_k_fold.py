@@ -46,7 +46,7 @@ for comb in feature_pool_1_combinations:
         
         avg_error = np.average(errors)
         if avg_error < error_rate:
-            error_rate = er
+            error_rate = avg_error
             confusion_matrix = cm
             chosen_features = features
 
