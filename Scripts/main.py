@@ -21,8 +21,8 @@ songs_dict = readGenreClassData("Data/GenreClassData_30s.txt")
 #                 "mfcc_6_std","mfcc_7_std","mfcc_8_std","mfcc_9_std","mfcc_10_std","mfcc_11_std","mfcc_12_std"]
 # features    = ["spectral_rolloff_mean","spectral_centroid_mean","mfcc_1_mean","tempo"]
 features    = ["spectral_rolloff_mean","spectral_centroid_mean","mfcc_1_mean","tempo"]
-genres      = ["pop","metal", "disco", "blues", "reggae", "classical", "rock", "hiphop", "country", "jazz"]
-# genres      = ["pop", "disco", "metal", "classical"] # Genres to plot in excercise 2
+# genres      = ["pop","metal", "disco", "blues", "reggae", "classical", "rock", "hiphop", "country", "jazz"]
+genres      = ["pop", "disco","metal","classical"] # Genres to plot in excercise 2
 
 #Extract training and test set
 X_train, y_train, ids_train  = getPointsAndClasses(songs_dict,features, genres, "Train")
@@ -33,8 +33,9 @@ X_test, y_test, ids_test  = getPointsAndClasses(songs_dict,features, genres, "Te
 # plt.show()
 
 # Create KNN object
+# knn_scikit = KNNSciKitClassifier(X_train, y_train, ids_train, features, 5,"min_max")
 knn = KNNClassifier(X_train, y_train, ids_train, features, 5 ,"min_max")
-knn_scikit = KNNSciKitClassifier(X_train, y_train, ids_train, features, 5,"min_max")
+
 
 
 # Do PCA on knn
@@ -46,16 +47,22 @@ knn_scikit = KNNSciKitClassifier(X_train, y_train, ids_train, features, 5,"min_m
 
 
 # Get confusion matrices
+
 print("Our KNN implementation:")
 confusion_matrix_our, confusion_matrix_list_our, error_rate = knn.evaluate(X_test.copy(),y_test.copy(),ids_test.copy())   
-print("\n Sci-kit KNN implementation:")
-confusion_matrix_scikit, confusion_matrix_list_scikit, error_rate = knn_scikit.evaluate(X_test.copy(),y_test.copy(),ids_test.copy())
+print(error_rate)
+# print("\n Sci-kit KNN implementation:")
+# confusion_matrix_scikit, confusion_matrix_list_scikit, error_rate = knn_scikit.evaluate(X_test.copy(),y_test.copy(),ids_test.copy())
+# print(error_rate)
+
 
 # Plot confusion matrices
 disp = ConfusionMatrixDisplay(confusion_matrix=confusion_matrix_our, display_labels=knn.classes)
 disp.plot(cmap=plt.cm.Blues,xticks_rotation=45)
 plt.show()
 
-disp = ConfusionMatrixDisplay(confusion_matrix=confusion_matrix_scikit, display_labels=genres)
-disp.plot(cmap=plt.cm.Blues,xticks_rotation=45)
-plt.show()
+# print(confusion_matrix_list_our[genres.index("blues")][genres.index("country")])
+
+# disp = ConfusionMatrixDisplay(confusion_matrix=confusion_matrix_scikit, display_labels=genres)
+# disp.plot(cmap=plt.cm.Blues,xticks_rotation=45)
+# plt.show()

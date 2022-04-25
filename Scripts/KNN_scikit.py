@@ -42,7 +42,7 @@ class KNNSciKitClassifier:
             self.min_max_normalise()
         
         #Scikit classifier
-        self.scikit_clf = neighbors.KNeighborsClassifier(self.k, weights="uniform")
+        self.scikit_clf = neighbors.KNeighborsClassifier(self.k, weights="uniform", algorithm="auto")
         self.scikit_clf.fit(self.X, self.y)
 
     def z_score_normalise(self):
@@ -118,8 +118,6 @@ class KNNSciKitClassifier:
             confusion_matrix_list[self.classes_id.index(genre_id)][self.classes_id.index(classified_id)].append(ids_list_test[i])
             confusion_matrix[self.classes_id.index(genre_id)][self.classes_id.index(classified_id)] +=  1
         er = error_rate(confusion_matrix)
-        print("Confusion matrix: \n", confusion_matrix)
-        print("Error rate: ", er)
         return confusion_matrix, confusion_matrix_list, er
     
     def doPCA(self, n_components):

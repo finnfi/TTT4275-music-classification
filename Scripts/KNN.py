@@ -1,4 +1,3 @@
-
 import numpy as np
 from sklearn.decomposition import PCA
 from song_features import genre_id_to_string
@@ -62,11 +61,21 @@ class KNNClassifier:
             self.X[:,i] = (self.X[:,i]-min)/diff
             self.features_min_max.append((min,max))
         
+    def doPCA(self, n_components):
+        '''
+        Transform points using PCA analysis
+        Changes self.points
+        '''
+        self.isPCAused = True
+        self.pca_n_components = n_components
+
+        self.pca = PCA(n_components=n_components)
+        self.X = self.pca.fit_transform(self.X)
 
     def classify(self, x):
         '''
         input: x of type np.array with dim = k (NOT normalised)
-        output: genre string
+        output: genre ID
         '''
         #normalise input if normalisation is enabled
         if self.input_normalisation_type == "z_score":
@@ -124,27 +133,20 @@ class KNNClassifier:
 
         #Return genre ID with smallest distance
         return points_to_consider[0][2]
-        
-    
-    def classify_song(self, song):
-        '''
-        input: song of type SongFeatures
-        output: genreID
-        '''
-        x = np.zeros(self.dim)
-        i = 0
-        for feature in self.features:
-            x[i] = song.__dict__[feature]
-            i += 1
-        genre = self.classify(x)
-        return genre
     
     def evaluate(self, X_test, y_test, ids_list_test):
         '''
-        input: training_set of type TrainingSet 
-        output: confusion_matrices (one with numbers, one with lists of ids)
+        input: 
+        X_test                  : point nd.array of dimension (N_POINTS, N_FEATURES)
+        y_test                  : nd.array of class labels
+        ids_list_test           : array of correspongin track ids 
+
+        output:
+        confusion_matrix        : 2D np array of ints with size (N_CLASSES, N_CLASSES)
+        confusion_matrix_list   : 2D array containg lists of classified song ids
+        er                      : Error rate          
         '''
-        confusion_matrix_list = [[[]]*self.num_classes for i in range(self.num_classes)]
+        confusion_matrix_list = [[[] for j in range(self.num_classes)] for i in range(self.num_classes)]
         confusion_matrix = np.zeros([self.num_classes,self.num_classes])
 
         for i in range(len(y_test)):
@@ -153,27 +155,13 @@ class KNNClassifier:
             confusion_matrix_list[self.classes_id.index(genre_id)][self.classes_id.index(classified_id)].append(ids_list_test[i])
             confusion_matrix[self.classes_id.index(genre_id)][self.classes_id.index(classified_id)] +=  1
         er = error_rate(confusion_matrix)
-        # print("Confusion matrix: \n", confusion_matrix)
-        # print("Error rate: ", er)
         return confusion_matrix, confusion_matrix_list, er
     
-    def doPCA(self, n_components):
-        '''
-        Transform points using PCA analysis
-        Changes self.points
-        '''
-        self.isPCAused = True
-        self.pca_n_components = n_components
-
-        self.pca = PCA(n_components=n_components)
-        self.X = self.pca.fit_transform(self.X)
-
-
-        
-
+    
+# Error rate helper function
 def error_rate(confusion_matrix):
     '''
-    input: confusion matrix as a 2-D np array
+    input: confusion matrix as a 2D array
     output: error rate (# of falsely classified points)/( # total points)
     '''
     total = np.sum(confusion_matrix)
