@@ -50,13 +50,13 @@ genres      = ["pop","metal", "disco", "blues", "reggae", "classical", "rock", "
 #             ei = 0
 #             for train_index, test_index in skf.split(X_train, y_train):
 #                 if j == 0:
-#                     clf = MLPClassifier(solver='lbfgs', alpha=1, activation="logistic", max_iter=100000,verbose=False,
+#                     clf = MLPClassifier(solver='lbfgs', alpha=1e-5, activation="logistic", max_iter=100000,verbose=False,
 #                                 hidden_layer_sizes=(i,), random_state=1)
 #                 elif k == 0:
-#                     clf = MLPClassifier(solver='lbfgs', alpha=1, activation="logistic", max_iter=100000,verbose=False,
+#                     clf = MLPClassifier(solver='lbfgs', alpha=1e-5, activation="logistic", max_iter=100000,verbose=False,
 #                                 hidden_layer_sizes=(i,j), random_state=1)
 #                 else:
-#                     clf = MLPClassifier(solver='lbfgs', alpha=1, activation="logistic", max_iter=100000,verbose=False,
+#                     clf = MLPClassifier(solver='lbfgs', alpha=1e-5, activation="logistic", max_iter=100000,verbose=False,
 #                                 hidden_layer_sizes=(i,j,k), random_state=1)
 #                 clf.fit(X_train[train_index,:], y_train[train_index])
 #                 y_pred = clf.predict(X_train[test_index,:].copy())
@@ -85,11 +85,11 @@ scaler = MinMaxScaler()
 X_train = scaler.fit_transform(X_train)
 
 #Create classifier
-clf = MLPClassifier(solver='lbfgs', alpha=1,activation="logistic", max_iter=100000,verbose=True,
-                                hidden_layer_sizes=(60,50,40))
+clf = MLPClassifier(solver='lbfgs', alpha=1e-5,activation="logistic", max_iter=100000,verbose=True,
+                                hidden_layer_sizes=(40,), random_state=1)
 clf.fit(X_train, y_train)
 
-X_test, y_test, ids_test  = getPointsAndClasses(songs_dict,features, genres, "Test")
+X_test, y_test, ids_test  = getPointsAndClasses(songs_dict,features, genres, "Train")
 X_test = scaler.transform(X_test)
 
 y_pred = clf.predict(X_test)

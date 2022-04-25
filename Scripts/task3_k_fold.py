@@ -4,6 +4,11 @@ from KNN import KNNClassifier
 from itertools import combinations
 from sklearn.model_selection import StratifiedKFold
 import numpy as np
+from sklearn.metrics import ConfusionMatrixDisplay
+from matplotlib import pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
+
+
 
 # Import song feature
 songs_dict  = readGenreClassData("Data/GenreClassData_30s.txt")
@@ -27,13 +32,14 @@ feature_pool_2 = ["zero_cross_rate_mean","zero_cross_rate_std","rmse_mean","rmse
 feature_pool_1_combinations = list(combinations(feature_pool_1,3))
 
 error_rate = 1
-confusion_matrix = []
 chosen_features = []
 
 for comb in feature_pool_1_combinations:
     for feature in feature_pool_2:
         features = list(comb) + [feature]
         X_train, y_train, ids_train  = getPointsAndClasses(songs_dict,features, genres, "Train")
+        scaler = MinMaxScaler()
+        X_train = scaler.fit_transform(X_train)
         skf = StratifiedKFold(n_splits=n_splits)
         skf.get_n_splits(X_train, y_train)
         errors = np.zeros(n_splits)
@@ -47,10 +53,26 @@ for comb in feature_pool_1_combinations:
         avg_error = np.average(errors)
         if avg_error < error_rate:
             error_rate = avg_error
-            confusion_matrix = cm
             chosen_features = features
 
 
+print("Selected features and average error rate: ")
 print(chosen_features)
-print(confusion_matrix)
 print(error_rate)
+
+# Run on test set
+X_train, y_train, ids_train  = getPointsAndClasses(songs_dict,chosen_features, genres, "Train")
+scaler = MinMaxScaler()
+X_train = scaler.fit_transform(X_train)
+X_test, y_test, ids_test  = getPointsAndClasses(songs_dict,chosen_features, genres, "Test")
+X_test = scaler.transform(X_test)
+
+knn = KNNClassifier(X_train, y_train, ids_train,chosen_features, 5 ,"min_max")
+cm, cm_list, er = knn.evaluate(X_test, y_test, np.array(ids_test).copy())
+
+print("Error rate: ", er)
+
+# Plot confusion matrices
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=knn.classes)
+disp.plot(cmap=plt.cm.Blues,xticks_rotation=45)
+plt.show()

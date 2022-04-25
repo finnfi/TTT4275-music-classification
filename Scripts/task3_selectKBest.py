@@ -63,6 +63,8 @@ X_test, y_test, ids_test        = getPointsAndClasses(songs_dict,features, genre
 knn = KNNClassifier(X_train, y_train, ids_train, features, 5 ,"min_max")
 confusion_matrix_our, confusion_matrix_list_our, error_rate = knn.evaluate(X_test.copy(),y_test.copy(),ids_test.copy())  
 
+print("Error rate: ", error_rate)
+
 # Plot confusion matrices
 disp = ConfusionMatrixDisplay(confusion_matrix=confusion_matrix_our, display_labels=knn.classes)
 disp.plot(cmap=plt.cm.Blues,xticks_rotation=45)

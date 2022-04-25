@@ -153,8 +153,8 @@ class KNNClassifier:
             confusion_matrix_list[self.classes_id.index(genre_id)][self.classes_id.index(classified_id)].append(ids_list_test[i])
             confusion_matrix[self.classes_id.index(genre_id)][self.classes_id.index(classified_id)] +=  1
         er = error_rate(confusion_matrix)
-        print("Confusion matrix: \n", confusion_matrix)
-        print("Error rate: ", er)
+        # print("Confusion matrix: \n", confusion_matrix)
+        # print("Error rate: ", er)
         return confusion_matrix, confusion_matrix_list, er
     
     def doPCA(self, n_components):
