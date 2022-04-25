@@ -96,7 +96,8 @@ class KNNClassifier:
         difference = self.X-x
         distances = np.sum(difference*difference,axis=1)
         # k smallest distances: 
-        index_k_nearest_points = np.argpartition(distances, self.k)[:self.k] #function gives array of indexes
+        #function gives array of indexes
+        index_k_nearest_points = np.argpartition(distances, self.k)[:self.k] 
         distance_k_nearest_points = distances[index_k_nearest_points]
 
         # Find genres 
@@ -105,7 +106,8 @@ class KNNClassifier:
             genres_k_nearest_points.append(self.y[i])
         
         # Combine data [[index, distance,genre], [index,distance,genre], ...]
-        k_nearest_points = [[index_k_nearest_points[i],distance_k_nearest_points[i],genres_k_nearest_points[i]] for i in range(self.k)]
+        k_nearest_points = [[index_k_nearest_points[i],distance_k_nearest_points[i],
+                            genres_k_nearest_points[i]] for i in range(self.k)]
         
         #Count genres
         genres_count = dict()
@@ -152,8 +154,10 @@ class KNNClassifier:
         for i in range(len(y_test)):
             genre_id = y_test[i]
             classified_id = self.classify(X_test[i,:])
-            confusion_matrix_list[self.classes_id.index(genre_id)][self.classes_id.index(classified_id)].append(ids_list_test[i])
-            confusion_matrix[self.classes_id.index(genre_id)][self.classes_id.index(classified_id)] +=  1
+            correct_index = self.classes_id.index(genre_id)
+            predicted_index = self.classes_id.index(classified_id)
+            confusion_matrix_list[correct_index][predicted_index].append(ids_list_test[i])
+            confusion_matrix[correct_index][predicted_index] +=  1
         er = error_rate(confusion_matrix)
         return confusion_matrix, confusion_matrix_list, er
     

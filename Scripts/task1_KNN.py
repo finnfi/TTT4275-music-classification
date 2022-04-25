@@ -1,8 +1,6 @@
-from plotter import plot_histogram, plot_3D_feature_space
 from song_features import readGenreClassData, getPointsAndClasses
 from KNN import KNNClassifier
 from KNN_scikit import KNNSciKitClassifier
-from itertools import combinations
 from sklearn.metrics import ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 
