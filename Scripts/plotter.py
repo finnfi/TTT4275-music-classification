@@ -96,8 +96,6 @@ def plot_3D_feature_space(X , y, features):
         for i in range(n_points):
             genre_id = y[i]
             genre_dict[genre_id] = np.append(genre_dict.get(genre_id, np.empty([0,n_features])), X[i,:].reshape(1,n_features), axis=0)
-
-        n_genres = len(genre_dict)
         
         #Init figure
         fig = plt.figure()

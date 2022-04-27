@@ -31,7 +31,7 @@ plt.show()
 knn = KNNClassifier(X_train, y_train, ids_train, features, 5 ,"min_max")
 
 # Do PCA on knn
-knn.doPCA(3)
+# knn.doPCA(3)
 
 # Plot 3D space
 ax = plot_3D_feature_space(X_train,y_train,features)

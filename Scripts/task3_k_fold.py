@@ -62,10 +62,7 @@ print(error_rate)
 
 # Run on test set
 X_train, y_train, ids_train  = getPointsAndClasses(songs_dict,chosen_features, genres, "Train")
-scaler = MinMaxScaler()
-X_train = scaler.fit_transform(X_train)
 X_test, y_test, ids_test  = getPointsAndClasses(songs_dict,chosen_features, genres, "Test")
-X_test = scaler.transform(X_test)
 
 knn = KNNClassifier(X_train, y_train, ids_train,chosen_features, 5 ,"min_max")
 cm, cm_list, er = knn.evaluate(X_test, y_test, np.array(ids_test).copy())

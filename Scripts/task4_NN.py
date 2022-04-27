@@ -89,7 +89,7 @@ clf = MLPClassifier(solver='lbfgs', alpha=1e-5,activation="logistic", max_iter=1
                                 hidden_layer_sizes=(40,), random_state=1)
 clf.fit(X_train, y_train)
 
-X_test, y_test, ids_test  = getPointsAndClasses(songs_dict,features, genres, "Train")
+X_test, y_test, ids_test  = getPointsAndClasses(songs_dict,features, genres, "Test")
 X_test = scaler.transform(X_test)
 
 y_pred = clf.predict(X_test)
