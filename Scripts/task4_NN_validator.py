@@ -25,57 +25,6 @@ features    = [ "zero_cross_rate_mean","zero_cross_rate_std","rmse_mean","rmse_v
                 "mfcc_6_std","mfcc_7_std","mfcc_8_std","mfcc_9_std","mfcc_10_std","mfcc_11_std","mfcc_12_std"]
 genres      = ["pop","metal", "disco", "blues", "reggae", "classical", "rock", "hiphop", "country", "jazz"]
 
-# #Extract training and test set
-# X_train, y_train, ids_train  = getPointsAndClasses(songs_dict,features, genres, "Train")
-
-# #Scale
-# scaler = MinMaxScaler()
-# scaler.fit(X_train)
-
-# # Find best model
-# n_splits = 3
-# er_best = 1
-# cm_best = None
-# ijk = None
-
-# for i in range(5,61,5):
-#     for j in range(0,i,5):
-#         for k in range(0,j,5):
-#             print(i,j,k)
-#             X_train, y_train, ids_train  = getPointsAndClasses(songs_dict,features, genres, "Train")
-#             X_train = scaler.transform(X_train)
-#             skf = StratifiedKFold(n_splits=n_splits)
-#             skf.get_n_splits(X_train, y_train)
-#             errors = np.zeros(n_splits)
-#             ei = 0
-#             for train_index, test_index in skf.split(X_train, y_train):
-#                 if j == 0:
-#                     clf = MLPClassifier(solver='lbfgs', alpha=1e-5, activation="logistic", max_iter=100000,verbose=False,
-#                                 hidden_layer_sizes=(i,), random_state=1)
-#                 elif k == 0:
-#                     clf = MLPClassifier(solver='lbfgs', alpha=1e-5, activation="logistic", max_iter=100000,verbose=False,
-#                                 hidden_layer_sizes=(i,j), random_state=1)
-#                 else:
-#                     clf = MLPClassifier(solver='lbfgs', alpha=1e-5, activation="logistic", max_iter=100000,verbose=False,
-#                                 hidden_layer_sizes=(i,j,k), random_state=1)
-#                 clf.fit(X_train[train_index,:], y_train[train_index])
-#                 y_pred = clf.predict(X_train[test_index,:].copy())
-#                 cm = confusion_matrix(y_train[test_index].copy(), y_pred)
-#                 errors[ei] = error_rate(cm)
-#                 ei = ei + 1
-
-#             avg_error = np.average(errors)
-#             if avg_error < er_best:
-#                 er_best = avg_error
-#                 cm_best = cm
-#                 ijk = [i,j,k]
-#             if j==0:
-#                 break
-
-# # Print final result
-# print("Chosen ijk: ", ijk)
-# print("Error rate: ", er_best)
-
 # Evaluate final NN
 # Extract training
 X_train, y_train, ids_train  = getPointsAndClasses(songs_dict,features, genres, "Train")
@@ -84,11 +33,12 @@ X_train, y_train, ids_train  = getPointsAndClasses(songs_dict,features, genres, 
 scaler = MinMaxScaler()
 X_train = scaler.fit_transform(X_train)
 
-#Create classifier
+#Create classifier and fit
 clf = MLPClassifier(solver='lbfgs', alpha=1e-5,activation="logistic", max_iter=100000,verbose=True,
                                 hidden_layer_sizes=(40,), random_state=1)
 clf.fit(X_train, y_train)
 
+# Test on test set
 X_test, y_test, ids_test  = getPointsAndClasses(songs_dict,features, genres, "Test")
 X_test = scaler.transform(X_test)
 
