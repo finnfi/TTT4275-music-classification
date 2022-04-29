@@ -28,8 +28,8 @@ best_idx = 0
 best_models = dict()
 list_of_error_rates = []
 
-# for k in range(1,len(features)+1):
-for k in range(10,11):
+for k in range(1,len(features)+1):
+# for k in range(1,11):
     # Import song feature
     songs_dict = readGenreClassData("Data/GenreClassData_30s.txt")
 
@@ -115,20 +115,19 @@ for k in range(10,11):
         best_idx = k
         best_models = copy.deepcopy(best_gmms)
 
-for genre, model in best_models.items():
-    print(genre, " has a model with ", model.n_components, " components")
 
-print(best_error_rate)
-print(best_idx)
-
-plt.title("Error rates for different # of selected features")
+# plt.title("Error rates for different # of selected features")
 plt.plot(np.arange(1,len(list_of_error_rates)+1,1), np.array(list_of_error_rates), color="red")
 plt.xlabel("# of selected features")
 plt.ylabel("Error rate")
 plt.show()
 
+# EVALUATE PLOT, and run the function above with appropriate feature size, to get the components number. 
 
-# disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=genres)
-# disp.plot(cmap=plt.cm.Blues,xticks_rotation=45)
-# plt.show()
+# Find components for GMM
+for genre, model in best_models.items():
+    print(genre, " has a model with ", model.n_components, " components")
 
+# Print error rates and best feature number
+print(best_error_rate)
+print(best_idx)

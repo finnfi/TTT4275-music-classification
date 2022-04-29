@@ -1,11 +1,14 @@
-from song_features import getPointsAndClasses
-from song_features import readGenreClassData
+from song_features import getPointsAndClasses, readGenreClassData
 from KNN import KNNClassifier
+
 from itertools import combinations
-from sklearn.model_selection import StratifiedKFold
-import numpy as np
-from sklearn.metrics import ConfusionMatrixDisplay
+
 from matplotlib import pyplot as plt
+
+import numpy as np
+
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.preprocessing import MinMaxScaler
 
 

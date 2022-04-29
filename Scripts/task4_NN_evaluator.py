@@ -1,14 +1,10 @@
 from sklearn.neural_network import MLPClassifier
-from plotter import plot_histogram, plot_3D_feature_space
-from song_features import readGenreClassData, getPointsAndClasses
-from KNN import KNNClassifier, error_rate
-from KNN_scikit import KNNSciKitClassifier
-from itertools import combinations
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
-import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
-import numpy as np
-from sklearn.model_selection import StratifiedKFold
+
+from song_features import readGenreClassData, getPointsAndClasses
+from KNN import error_rate
+import matplotlib.pyplot as plt
 
 
 # Import song feature

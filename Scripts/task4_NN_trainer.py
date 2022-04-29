@@ -38,6 +38,7 @@ er_best = 1
 cm_best = None
 ijk = None
 
+# i -> # of nodes in first layer, j -> # of nodes in second layer, k -> # of nodes in third layer
 for i in range(5,61,5):
     for j in range(0,i,5):
         for k in range(0,j,5):
@@ -48,6 +49,7 @@ for i in range(5,61,5):
             skf.get_n_splits(X_train, y_train)
             errors = np.zeros(n_splits)
             ei = 0
+            # Get error rate with k-fold cross validation
             for train_index, test_index in skf.split(X_train, y_train):
                 if j == 0:
                     clf = MLPClassifier(solver='lbfgs', alpha=1e-5, activation="logistic", max_iter=100000,verbose=False,

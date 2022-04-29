@@ -1,16 +1,15 @@
-from soupsieve import select
-from song_features import genre_id_to_string, genre_string_to_id
-from song_features import readGenreClassData, getPointsAndClasses
+from song_features import genre_id_to_string, readGenreClassData, getPointsAndClasses
 from KNN import error_rate
-from itertools import cycle
+
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 from sklearn.mixture import GaussianMixture
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.feature_selection import SelectKBest
+
 import numpy as np
 import copy
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
+
 
 # Choose features and genres:
 features    = [ "zero_cross_rate_mean","zero_cross_rate_std","rmse_mean","rmse_var","spectral_centroid_mean","spectral_centroid_var","spectral_bandwidth_mean",
@@ -45,6 +44,7 @@ for f in feature_map:
     idx = int(f[1:])
     print(features[idx])
 
+# Define # of components
 model_sizes = {'pop': 1, 'metal': 1, 'disco': 8, 'blues':2, 'reggae':1, 'classical':1, 'rock': 4, 'hiphop': 6, 'country': 1, 'jazz':3}
 
 # Create appropriate model
@@ -58,7 +58,7 @@ for genre in genres:
     best_gmms[genre] = copy.deepcopy(gmm)
 
 # Get test set
-X_test, y_test, ids  = getPointsAndClasses(songs_dict,features, genres, "Train")
+X_test, y_test, ids  = getPointsAndClasses(songs_dict,features, genres, "Test")
 # Scale and extract k best features
 X_test = scaler.transform(X_test)
 X_test = k_best.transform(X_test)
@@ -76,7 +76,7 @@ cm = np.zeros((len(genres), len(genres)))
 for i in range(len(y_test)):
     cm[genres.index(genre_id_to_string(y_test[i])), maxVal_ind_rowise[i]] += 1
 
-# Display confusion matrices
+# Display confusion matrices and print error rate
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=genres)
 disp.plot(cmap=plt.cm.Blues,xticks_rotation=45)
 plt.show()

@@ -1,14 +1,13 @@
-from sklearn.neural_network import MLPClassifier
-from plotter import plot_histogram, plot_3D_feature_space
 from song_features import readGenreClassData, getPointsAndClasses
-from KNN import KNNClassifier, error_rate
-from KNN_scikit import KNNSciKitClassifier
-from itertools import combinations
-from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
-import matplotlib.pyplot as plt
+from KNN import error_rate
+
+from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import MinMaxScaler
+
+import matplotlib.pyplot as plt
+
 import numpy as np
-from sklearn.model_selection import StratifiedKFold
 
 
 # Import song feature
@@ -28,20 +27,25 @@ genres      = ["pop","metal", "disco", "blues", "reggae", "classical", "rock", "
 # Extract training
 X_train, y_train, ids_train  = getPointsAndClasses(songs_dict,features, genres, "Train")
 
-#Scale
+# Scale
 scaler = MinMaxScaler()
 X_train = scaler.fit_transform(X_train)
 
+# Initialise arrays for error rates
 error_rates_train = []
 error_rates_test = []
+
+# Make list of alphas to test
 alphas = np.logspace(-5,2,num=8, base = 10.0)
 
+# Test for each alpha
 for alpha in alphas:
     #Create classifier
     clf = MLPClassifier(solver='lbfgs', alpha=alpha,activation="logistic", max_iter=100000,verbose=True,
                                     hidden_layer_sizes=(40,), random_state=1)
     clf.fit(X_train, y_train)
 
+    # Evaluate for alpha
     X_test, y_test, ids_test  = getPointsAndClasses(songs_dict,features, genres, "Test")
     X_test = scaler.transform(X_test)
 
@@ -52,6 +56,7 @@ for alpha in alphas:
     error_rates_test.append(error_rate(cm_test))
     error_rates_train.append(error_rate(cm_train))
 
+# Plot result for each alpha
 fig = plt.figure()
 ax = fig.add_subplot()
 ax.plot(alphas, np.array(error_rates_train), color="red",label="Training set")

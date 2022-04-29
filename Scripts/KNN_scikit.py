@@ -1,7 +1,9 @@
 import numpy as np
-from sklearn import neighbors
+
 from song_features import genre_id_to_string
+
 from sklearn.decomposition import PCA
+from sklearn import neighbors
 
 
 
