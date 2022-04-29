@@ -2,3 +2,4 @@ genres
 __pycache__
 .vscode
 .ipynb_checkpoints
+Scripts/__pycache__
